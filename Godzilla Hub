@@ -1,0 +1,2529 @@
+-- Godzilla Hub Script
+-- Criado por: sereireconhecido, Godzilla_eoking1
+-- By: Godzilla Studios
+
+-- Serviços
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- Variáveis de controle
+local isMinimized = false
+local currentTab = "Créditos"
+local startTime = tick()
+
+-- Criar ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GodzillaHub"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = game:GetService("CoreGui")
+
+-- Frame Principal
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 600, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = false
+MainFrame.Parent = ScreenGui
+
+-- Adicionar sombra
+local Shadow = Instance.new("Frame")
+Shadow.Name = "Shadow"
+Shadow.Size = UDim2.new(1, 10, 1, 10)
+Shadow.Position = UDim2.new(0, -5, 0, -5)
+Shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.BackgroundTransparency = 0.5
+Shadow.BorderSizePixel = 0
+Shadow.ZIndex = 0
+Shadow.Parent = MainFrame
+
+-- Barra Superior
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+-- Título
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Godzilla Hub"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+
+-- Botão X (Fechar)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 35, 0, 35)
+CloseButton.Position = UDim2.new(1, -40, 0, 2.5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 16
+CloseButton.Parent = TopBar
+
+CloseButton.MouseEnter:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+end)
+CloseButton.MouseLeave:Connect(function()
+    CloseButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end)
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Botão - (Minimizar)
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Size = UDim2.new(0, 35, 0, 35)
+MinimizeButton.Position = UDim2.new(1, -80, 0, 2.5)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MinimizeButton.BorderSizePixel = 0
+MinimizeButton.Text = "-"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.TextSize = 16
+MinimizeButton.Parent = TopBar
+
+MinimizeButton.MouseEnter:Connect(function()
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+end)
+MinimizeButton.MouseLeave:Connect(function()
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end)
+MinimizeButton.MouseButton1Click:Connect(function()
+    if not isMinimized then
+        MainFrame.Size = UDim2.new(0, 600, 0, 40)
+        MainFrame.ClipsDescendants = true
+        isMinimized = true
+    end
+end)
+
+-- Botão + (Restaurar)
+local RestoreButton = Instance.new("TextButton")
+RestoreButton.Name = "RestoreButton"
+RestoreButton.Size = UDim2.new(0, 35, 0, 35)
+RestoreButton.Position = UDim2.new(1, -120, 0, 2.5)
+RestoreButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+RestoreButton.BorderSizePixel = 0
+RestoreButton.Text = "+"
+RestoreButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RestoreButton.Font = Enum.Font.GothamBold
+RestoreButton.TextSize = 16
+RestoreButton.Parent = TopBar
+
+RestoreButton.MouseEnter:Connect(function()
+    RestoreButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+end)
+RestoreButton.MouseLeave:Connect(function()
+    RestoreButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end)
+RestoreButton.MouseButton1Click:Connect(function()
+    if isMinimized then
+        MainFrame.Size = UDim2.new(0, 600, 0, 400)
+        MainFrame.ClipsDescendants = false
+        isMinimized = false
+    end
+end)
+
+-- Container para as abas (lado esquerdo)
+local TabContainer = Instance.new("Frame")
+TabContainer.Name = "TabContainer"
+TabContainer.Size = UDim2.new(0, 150, 1, -40)
+TabContainer.Position = UDim2.new(0, 0, 0, 40)
+TabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TabContainer.BorderSizePixel = 0
+TabContainer.Parent = MainFrame
+
+-- Lista de abas
+local tabs = {
+    {name = "Créditos", icon = "⭐"},
+    {name = "PvP", icon = "⚔️"},
+    {name = "Troll", icon = "👿"},
+    {name = "Proteção", icon = "🛡️"},
+    {name = "Farm", icon = "💰"},
+    {name = "Player", icon = "👤"},
+    {name = "Teleportes", icon = "🌀"},
+    {name = "Scripts", icon = "📜"},
+    {name = "Configuração", icon = "⚙️"}
+}
+
+-- Indicador de aba ativa
+local TabIndicator = Instance.new("Frame")
+TabIndicator.Name = "TabIndicator"
+TabIndicator.Size = UDim2.new(0, 3, 0, 35)
+TabIndicator.Position = UDim2.new(1, -3, 0, 0)
+TabIndicator.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+TabIndicator.BorderSizePixel = 0
+TabIndicator.Parent = TabContainer
+
+-- Container para o conteúdo (lado direito)
+local ContentContainer = Instance.new("ScrollingFrame")
+ContentContainer.Name = "ContentContainer"
+ContentContainer.Size = UDim2.new(1, -150, 1, -40)
+ContentContainer.Position = UDim2.new(0, 150, 0, 40)
+ContentContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ContentContainer.BorderSizePixel = 0
+ContentContainer.ScrollBarThickness = 6
+ContentContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 255)
+ContentContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+ContentContainer.Parent = MainFrame
+
+-- Funções auxiliares
+local function clearContent()
+    for _, child in pairs(ContentContainer:GetChildren()) do
+        if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
+            child:Destroy()
+        end
+    end
+end
+
+local function createLabel(text, parent, textSize, bold)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 0, textSize or 20)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Font = bold and Enum.Font.GothamBold or Enum.Font.Gotham
+    label.TextSize = textSize or 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextWrapped = true
+    label.Parent = parent
+    return label
+end
+
+local function createButton(text, callback, parent)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -20, 0, 35)
+    button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    button.BorderSizePixel = 0
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 14
+    button.Parent = parent
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 5)
+    corner.Parent = button
+    
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(0, 140, 255)
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    end)
+    button.MouseButton1Click:Connect(callback)
+    
+    return button
+end
+
+local function createImage(imageId, parent)
+    local imageFrame = Instance.new("Frame")
+    imageFrame.Size = UDim2.new(1, -20, 0, 200)
+    imageFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    imageFrame.BorderSizePixel = 0
+    imageFrame.Parent = parent
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = imageFrame
+    
+    local image = Instance.new("ImageLabel")
+    image.Size = UDim2.new(1, 0, 1, 0)
+    image.BackgroundTransparency = 1
+    image.Image = "rbxassetid://" .. imageId
+    image.ScaleType = Enum.ScaleType.Fit
+    image.Parent = imageFrame
+    
+    local imageCorner = Instance.new("UICorner")
+    imageCorner.CornerRadius = UDim.new(0, 8)
+    imageCorner.Parent = image
+    
+    return imageFrame
+end
+
+local function createSeparator(parent)
+    local separator = Instance.new("Frame")
+    separator.Size = UDim2.new(1, -20, 0, 1)
+    separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    separator.BorderSizePixel = 0
+    separator.Parent = parent
+    return separator
+end
+
+local function createSpacer(height, parent)
+    local spacer = Instance.new("Frame")
+    spacer.Size = UDim2.new(1, 0, 0, height or 10)
+    spacer.BackgroundTransparency = 1
+    spacer.Parent = parent
+    return spacer
+end
+
+-- Variáveis para atualização em tempo real
+local timeLabel, fpsLabel, playerCountLabel
+
+-- Variáveis globais para PvP
+local aimbotEnabled = false
+local aimbotFOV = 100
+local aimbotCircle = nil
+local hitboxEnabled = false
+local hitboxSize = 5
+local selectedPlayer = nil
+local originalPosition = nil
+
+-- Função para criar círculo do Aimbot
+local function createAimbotCircle()
+    if aimbotCircle then
+        aimbotCircle:Remove()
+    end
+    
+    aimbotCircle = Drawing.new("Circle")
+    aimbotCircle.Thickness = 2
+    aimbotCircle.NumSides = 64
+    aimbotCircle.Radius = aimbotFOV
+    aimbotCircle.Filled = false
+    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
+    aimbotCircle.Transparency = 1
+    aimbotCircle.Visible = true
+    
+    -- Atualizar posição do círculo
+    RunService.RenderStepped:Connect(function()
+        if aimbotCircle and aimbotEnabled then
+            local camera = workspace.CurrentCamera
+            local viewportSize = camera.ViewportSize
+            aimbotCircle.Position = Vector2.new(viewportSize.X / 2, viewportSize.Y / 2)
+            aimbotCircle.Radius = aimbotFOV
+            aimbotCircle.Visible = true
+        elseif aimbotCircle then
+            aimbotCircle.Visible = false
+        end
+    end)
+end
+
+-- Função Aimbot
+local function getClosestPlayerInFOV()
+    local camera = workspace.CurrentCamera
+    local closestPlayer = nil
+    local shortestDistance = aimbotFOV
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local head = player.Character.Head
+            local screenPoint, onScreen = camera:WorldToViewportPoint(head.Position)
+            
+            if onScreen then
+                local viewportSize = camera.ViewportSize
+                local center = Vector2.new(viewportSize.X / 2, viewportSize.Y / 2)
+                local mousePos = Vector2.new(screenPoint.X, screenPoint.Y)
+                local distance = (center - mousePos).Magnitude
+                
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+-- Loop do Aimbot
+spawn(function()
+    RunService.RenderStepped:Connect(function()
+        if aimbotEnabled then
+            local targetPlayer = getClosestPlayerInFOV()
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
+                local camera = workspace.CurrentCamera
+                camera.CFrame = CFrame.new(camera.CFrame.Position, targetPlayer.Character.Head.Position)
+            end
+        end
+    end)
+end)
+
+-- Função para expandir HitBox (apenas cabeça)
+local function expandHitbox(character, size)
+    if character:FindFirstChild("Head") then
+        local head = character.Head
+        head.Size = Vector3.new(size, size, size)
+        head.Transparency = 0.5
+        head.CanCollide = false
+        
+        -- Manter a face visível
+        if head:FindFirstChild("face") then
+            head.face.Transparency = 0
+        end
+    end
+end
+
+-- Função para resetar HitBox
+local function resetHitbox(character)
+    if character:FindFirstChild("Head") then
+        local head = character.Head
+        head.Size = Vector3.new(2, 1, 1) -- Tamanho padrão da cabeça
+        head.Transparency = 0
+        head.CanCollide = false
+        
+        if head:FindFirstChild("face") then
+            head.face.Transparency = 0
+        end
+    end
+end
+
+-- Loop do HitBox
+spawn(function()
+    while wait(0.1) do
+        if hitboxEnabled then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    expandHitbox(player.Character, hitboxSize)
+                end
+            end
+        else
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    resetHitbox(player.Character)
+                end
+            end
+        end
+    end
+end)
+
+-- Função para matar jogador
+local function killPlayer(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Godzilla Hub";
+            Text = "Jogador inválido!";
+            Duration = 3;
+        })
+        return
+    end
+    
+    -- Salvar posição original
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        originalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+    end
+    
+    -- Equipar Machete
+    for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+        if tool.Name == "Machete" then
+            LocalPlayer.Character.Humanoid:EquipTool(tool)
+            break
+        end
+    end
+    
+    -- Teleportar e atacar
+    spawn(function()
+        for i = 1, 10 do
+            if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                -- Teleportar atrás do jogador
+                local targetPos = targetPlayer.Character.HumanoidRootPart.CFrame
+                LocalPlayer.Character.HumanoidRootPart.CFrame = targetPos * CFrame.new(0, 0, 3)
+                
+                -- Clicar (simular ataque)
+                wait(1)
+                mouse1click()
+            else
+                break
+            end
+        end
+        
+        -- Voltar para posição original
+        wait(0.5)
+        if originalPosition and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = originalPosition
+        end
+        
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Godzilla Hub";
+            Text = "Ação concluída!";
+            Duration = 3;
+        })
+    end)
+end
+
+-- Função para atualizar conteúdo baseado na aba
+function updateContent(tabName)
+    clearContent()
+    
+    if tabName == "Créditos" then
+        -- URL do Discord
+        createLabel("https://discord.gg/PDc8bHsT", ContentContainer, 16, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Imagem do Discord
+        createImage("110586608819666", ContentContainer)
+        createSpacer(10, ContentContainer)
+        
+        -- Label Discord Server
+        createLabel("Discord Server:", ContentContainer, 14)
+        
+        -- Botão Copy Link
+        createButton("Copy Link", function()
+            setclipboard("https://discord.gg/PDc8bHsT")
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Godzilla Hub";
+                Text = "Link do Discord copiado!";
+                Duration = 3;
+            })
+        end, ContentContainer)
+        
+        createSpacer(15, ContentContainer)
+        createSeparator(ContentContainer)
+        createSpacer(15, ContentContainer)
+        
+        -- Informações do Script
+        createLabel("Informações do Script", ContentContainer, 16, true)
+        createLabel("", ContentContainer, 5)
+        createLabel("Criadores:", ContentContainer, 14)
+        createLabel("  sereireconhecido", ContentContainer, 14)
+        createLabel("  Godzilla_eoking1", ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("By:", ContentContainer, 14)
+        createLabel("  Godzilla Studios", ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Você está usando:", ContentContainer, 14)
+        createLabel("  Godzilla Hub", ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Executor Utilizado:", ContentContainer, 14)
+        createLabel("  " .. (identifyexecutor and identifyexecutor() or "Nome do Executor"), ContentContainer, 14)
+        
+        createSpacer(15, ContentContainer)
+        createSeparator(ContentContainer)
+        createSpacer(15, ContentContainer)
+        
+        -- Informações
+        createLabel("Informações", ContentContainer, 16, true)
+        createLabel("", ContentContainer, 5)
+        createLabel("Hoje é dia:", ContentContainer, 14)
+        createLabel("  " .. os.date("(%d/%m/%Y - %H:%M:%S)"), ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Seu Nickname:", ContentContainer, 14)
+        createLabel("  " .. LocalPlayer.Name, ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Seu ID:", ContentContainer, 14)
+        createLabel("  " .. LocalPlayer.UserId, ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Seu Jogo:", ContentContainer, 14)
+        local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+        createLabel("  " .. gameName, ContentContainer, 14)
+        createLabel("", ContentContainer, 5)
+        createLabel("Tempo de uso do script:", ContentContainer, 14)
+        
+        -- Label de tempo que será atualizada
+        local timeUsageLabel = createLabel("  (Tempo de uso do script)", ContentContainer, 14)
+        
+        -- Atualizar tempo em tempo real
+        spawn(function()
+            while ContentContainer and timeUsageLabel and timeUsageLabel.Parent do
+                wait(1)
+                local elapsed = tick() - startTime
+                local hours = math.floor(elapsed / 3600)
+                local minutes = math.floor((elapsed % 3600) / 60)
+                local seconds = math.floor(elapsed % 60)
+                
+                if timeUsageLabel and timeUsageLabel.Parent then
+                    timeUsageLabel.Text = string.format("  %02d:%02d:%02d", hours, minutes, seconds)
+                else
+                    break
+                end
+            end
+        end)
+        
+        createLabel("", ContentContainer, 5)
+        createLabel("Seu Fps:", ContentContainer, 14)
+        fpsLabel = createLabel("  (Fps do jogador)", ContentContainer, 14)
+        
+        -- Atualizar FPS em tempo real
+        spawn(function()
+            local lastUpdate = tick()
+            local frames = 0
+            
+            local connection
+            connection = RunService.RenderStepped:Connect(function()
+                frames = frames + 1
+                
+                if tick() - lastUpdate >= 1 then
+                    if fpsLabel and fpsLabel.Parent then
+                        fpsLabel.Text = "  " .. frames .. " FPS"
+                    else
+                        connection:Disconnect()
+                    end
+                    frames = 0
+                    lastUpdate = tick()
+                end
+            end)
+        end)
+        
+        createLabel("", ContentContainer, 5)
+        createLabel("Quantidade de jogadores no serv:", ContentContainer, 14)
+        playerCountLabel = createLabel("  (quantidade de jogadores)", ContentContainer, 14)
+        
+        -- Atualizar contagem de jogadores inicialmente
+        if playerCountLabel then
+            playerCountLabel.Text = "  " .. #Players:GetPlayers() .. " jogadores"
+        end
+        
+        -- Atualizar contagem de jogadores
+        Players.PlayerAdded:Connect(function()
+            wait(0.1)
+            if playerCountLabel and playerCountLabel.Parent then
+                playerCountLabel.Text = "  " .. #Players:GetPlayers() .. " jogadores"
+            end
+        end)
+        
+        Players.PlayerRemoving:Connect(function()
+            wait(0.1)
+            if playerCountLabel and playerCountLabel.Parent then
+                playerCountLabel.Text = "  " .. #Players:GetPlayers() .. " jogadores"
+            end
+        end)
+        
+    elseif tabName == "PvP" then
+        -- Título da aba
+        createLabel("Aimbot", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Toggle Aimbot
+        local aimbotToggle = Instance.new("Frame")
+        aimbotToggle.Size = UDim2.new(1, -20, 0, 40)
+        aimbotToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        aimbotToggle.BorderSizePixel = 0
+        aimbotToggle.Parent = ContentContainer
+        
+        local aimbotCorner = Instance.new("UICorner")
+        aimbotCorner.CornerRadius = UDim.new(0, 5)
+        aimbotCorner.Parent = aimbotToggle
+        
+        local aimbotLabel = Instance.new("TextLabel")
+        aimbotLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        aimbotLabel.Position = UDim2.new(0, 10, 0, 0)
+        aimbotLabel.BackgroundTransparency = 1
+        aimbotLabel.Text = "Aimbot"
+        aimbotLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        aimbotLabel.Font = Enum.Font.GothamBold
+        aimbotLabel.TextSize = 14
+        aimbotLabel.TextXAlignment = Enum.TextXAlignment.Left
+        aimbotLabel.Parent = aimbotToggle
+        
+        local aimbotStatus = Instance.new("TextLabel")
+        aimbotStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        aimbotStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        aimbotStatus.BackgroundTransparency = 1
+        aimbotStatus.Text = "Off"
+        aimbotStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        aimbotStatus.Font = Enum.Font.GothamBold
+        aimbotStatus.TextSize = 14
+        aimbotStatus.TextXAlignment = Enum.TextXAlignment.Right
+        aimbotStatus.Parent = aimbotToggle
+        
+        local aimbotButton = Instance.new("TextButton")
+        aimbotButton.Size = UDim2.new(1, 0, 1, 0)
+        aimbotButton.BackgroundTransparency = 1
+        aimbotButton.Text = ""
+        aimbotButton.Parent = aimbotToggle
+        
+        aimbotButton.MouseButton1Click:Connect(function()
+            aimbotEnabled = not aimbotEnabled
+            if aimbotEnabled then
+                aimbotStatus.Text = "On"
+                aimbotStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                createAimbotCircle()
+            else
+                aimbotStatus.Text = "Off"
+                aimbotStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+                if aimbotCircle then
+                    aimbotCircle:Remove()
+                    aimbotCircle = nil
+                end
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Slider Aimbot FOV
+        local aimbotSlider = Instance.new("Frame")
+        aimbotSlider.Size = UDim2.new(1, -20, 0, 50)
+        aimbotSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        aimbotSlider.BorderSizePixel = 0
+        aimbotSlider.Parent = ContentContainer
+        
+        local aimbotSliderCorner = Instance.new("UICorner")
+        aimbotSliderCorner.CornerRadius = UDim.new(0, 5)
+        aimbotSliderCorner.Parent = aimbotSlider
+        
+        local aimbotSliderLabel = Instance.new("TextLabel")
+        aimbotSliderLabel.Size = UDim2.new(1, -20, 0, 20)
+        aimbotSliderLabel.Position = UDim2.new(0, 10, 0, 5)
+        aimbotSliderLabel.BackgroundTransparency = 1
+        aimbotSliderLabel.Text = "FOV: " .. aimbotFOV
+        aimbotSliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        aimbotSliderLabel.Font = Enum.Font.Gotham
+        aimbotSliderLabel.TextSize = 12
+        aimbotSliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+        aimbotSliderLabel.Parent = aimbotSlider
+        
+        local aimbotSliderBg = Instance.new("Frame")
+        aimbotSliderBg.Size = UDim2.new(1, -20, 0, 6)
+        aimbotSliderBg.Position = UDim2.new(0, 10, 0, 32)
+        aimbotSliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        aimbotSliderBg.BorderSizePixel = 0
+        aimbotSliderBg.Parent = aimbotSlider
+        
+        local aimbotSliderBgCorner = Instance.new("UICorner")
+        aimbotSliderBgCorner.CornerRadius = UDim.new(0, 3)
+        aimbotSliderBgCorner.Parent = aimbotSliderBg
+        
+        local aimbotSliderFill = Instance.new("Frame")
+        aimbotSliderFill.Size = UDim2.new(0.5, 0, 1, 0)
+        aimbotSliderFill.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        aimbotSliderFill.BorderSizePixel = 0
+        aimbotSliderFill.Parent = aimbotSliderBg
+        
+        local aimbotSliderFillCorner = Instance.new("UICorner")
+        aimbotSliderFillCorner.CornerRadius = UDim.new(0, 3)
+        aimbotSliderFillCorner.Parent = aimbotSliderFill
+        
+        local aimbotSliderButton = Instance.new("TextButton")
+        aimbotSliderButton.Size = UDim2.new(0, 16, 0, 16)
+        aimbotSliderButton.Position = UDim2.new(0.5, -8, 0.5, -8)
+        aimbotSliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        aimbotSliderButton.BorderSizePixel = 0
+        aimbotSliderButton.Text = ""
+        aimbotSliderButton.Parent = aimbotSliderBg
+        
+        local aimbotSliderButtonCorner = Instance.new("UICorner")
+        aimbotSliderButtonCorner.CornerRadius = UDim.new(1, 0)
+        aimbotSliderButtonCorner.Parent = aimbotSliderButton
+        
+        local aimbotDragging = false
+        aimbotSliderButton.MouseButton1Down:Connect(function()
+            aimbotDragging = true
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                aimbotDragging = false
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if aimbotDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local mousePos = UserInputService:GetMouseLocation()
+                local sliderPos = aimbotSliderBg.AbsolutePosition.X
+                local sliderSize = aimbotSliderBg.AbsoluteSize.X
+                local relativePos = math.clamp((mousePos.X - sliderPos) / sliderSize, 0, 1)
+                
+                aimbotSliderButton.Position = UDim2.new(relativePos, -8, 0.5, -8)
+                aimbotSliderFill.Size = UDim2.new(relativePos, 0, 1, 0)
+                
+                aimbotFOV = math.floor(50 + (relativePos * 250))
+                aimbotSliderLabel.Text = "FOV: " .. aimbotFOV
+            end
+        end)
+        
+        createSpacer(15, ContentContainer)
+        
+        -- Título HitBox
+        createLabel("HitBox", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Toggle HitBox
+        local hitboxToggle = Instance.new("Frame")
+        hitboxToggle.Size = UDim2.new(1, -20, 0, 40)
+        hitboxToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        hitboxToggle.BorderSizePixel = 0
+        hitboxToggle.Parent = ContentContainer
+        
+        local hitboxCorner = Instance.new("UICorner")
+        hitboxCorner.CornerRadius = UDim.new(0, 5)
+        hitboxCorner.Parent = hitboxToggle
+        
+        local hitboxLabel = Instance.new("TextLabel")
+        hitboxLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        hitboxLabel.Position = UDim2.new(0, 10, 0, 0)
+        hitboxLabel.BackgroundTransparency = 1
+        hitboxLabel.Text = "Hitbox"
+        hitboxLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        hitboxLabel.Font = Enum.Font.GothamBold
+        hitboxLabel.TextSize = 14
+        hitboxLabel.TextXAlignment = Enum.TextXAlignment.Left
+        hitboxLabel.Parent = hitboxToggle
+        
+        local hitboxStatus = Instance.new("TextLabel")
+        hitboxStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        hitboxStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        hitboxStatus.BackgroundTransparency = 1
+        hitboxStatus.Text = "Off"
+        hitboxStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        hitboxStatus.Font = Enum.Font.GothamBold
+        hitboxStatus.TextSize = 14
+        hitboxStatus.TextXAlignment = Enum.TextXAlignment.Right
+        hitboxStatus.Parent = hitboxToggle
+        
+        local hitboxButton = Instance.new("TextButton")
+        hitboxButton.Size = UDim2.new(1, 0, 1, 0)
+        hitboxButton.BackgroundTransparency = 1
+        hitboxButton.Text = ""
+        hitboxButton.Parent = hitboxToggle
+        
+        hitboxButton.MouseButton1Click:Connect(function()
+            hitboxEnabled = not hitboxEnabled
+            if hitboxEnabled then
+                hitboxStatus.Text = "On"
+                hitboxStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                hitboxStatus.Text = "Off"
+                hitboxStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Slider HitBox Size
+        local hitboxSlider = Instance.new("Frame")
+        hitboxSlider.Size = UDim2.new(1, -20, 0, 50)
+        hitboxSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        hitboxSlider.BorderSizePixel = 0
+        hitboxSlider.Parent = ContentContainer
+        
+        local hitboxSliderCorner = Instance.new("UICorner")
+        hitboxSliderCorner.CornerRadius = UDim.new(0, 5)
+        hitboxSliderCorner.Parent = hitboxSlider
+        
+        local hitboxSliderLabel = Instance.new("TextLabel")
+        hitboxSliderLabel.Size = UDim2.new(1, -20, 0, 20)
+        hitboxSliderLabel.Position = UDim2.new(0, 10, 0, 5)
+        hitboxSliderLabel.BackgroundTransparency = 1
+        hitboxSliderLabel.Text = "Size: " .. hitboxSize
+        hitboxSliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        hitboxSliderLabel.Font = Enum.Font.Gotham
+        hitboxSliderLabel.TextSize = 12
+        hitboxSliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+        hitboxSliderLabel.Parent = hitboxSlider
+        
+        local hitboxSliderBg = Instance.new("Frame")
+        hitboxSliderBg.Size = UDim2.new(1, -20, 0, 6)
+        hitboxSliderBg.Position = UDim2.new(0, 10, 0, 32)
+        hitboxSliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        hitboxSliderBg.BorderSizePixel = 0
+        hitboxSliderBg.Parent = hitboxSlider
+        
+        local hitboxSliderBgCorner = Instance.new("UICorner")
+        hitboxSliderBgCorner.CornerRadius = UDim.new(0, 3)
+        hitboxSliderBgCorner.Parent = hitboxSliderBg
+        
+        local hitboxSliderFill = Instance.new("Frame")
+        hitboxSliderFill.Size = UDim2.new(0.2, 0, 1, 0)
+        hitboxSliderFill.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        hitboxSliderFill.BorderSizePixel = 0
+        hitboxSliderFill.Parent = hitboxSliderBg
+        
+        local hitboxSliderFillCorner = Instance.new("UICorner")
+        hitboxSliderFillCorner.CornerRadius = UDim.new(0, 3)
+        hitboxSliderFillCorner.Parent = hitboxSliderFill
+        
+        local hitboxSliderButton = Instance.new("TextButton")
+        hitboxSliderButton.Size = UDim2.new(0, 16, 0, 16)
+        hitboxSliderButton.Position = UDim2.new(0.2, -8, 0.5, -8)
+        hitboxSliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        hitboxSliderButton.BorderSizePixel = 0
+        hitboxSliderButton.Text = ""
+        hitboxSliderButton.Parent = hitboxSliderBg
+        
+        local hitboxSliderButtonCorner = Instance.new("UICorner")
+        hitboxSliderButtonCorner.CornerRadius = UDim.new(1, 0)
+        hitboxSliderButtonCorner.Parent = hitboxSliderButton
+        
+        local hitboxDragging = false
+        hitboxSliderButton.MouseButton1Down:Connect(function()
+            hitboxDragging = true
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                hitboxDragging = false
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if hitboxDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local mousePos = UserInputService:GetMouseLocation()
+                local sliderPos = hitboxSliderBg.AbsolutePosition.X
+                local sliderSize = hitboxSliderBg.AbsoluteSize.X
+                local relativePos = math.clamp((mousePos.X - sliderPos) / sliderSize, 0, 1)
+                
+                hitboxSliderButton.Position = UDim2.new(relativePos, -8, 0.5, -8)
+                hitboxSliderFill.Size = UDim2.new(relativePos, 0, 1, 0)
+                
+                hitboxSize = math.floor(1 + (relativePos * 19))
+                hitboxSliderLabel.Text = "Size: " .. hitboxSize
+            end
+        end)
+        
+        createSpacer(15, ContentContainer)
+        
+    elseif tabName == "Troll" then
+        -- Título Matar Jogador
+        createLabel("Matar Jogador", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Dropdown de jogadores
+        local dropdownFrame = Instance.new("Frame")
+        dropdownFrame.Size = UDim2.new(1, -20, 0, 40)
+        dropdownFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        dropdownFrame.BorderSizePixel = 0
+        dropdownFrame.ZIndex = 10
+        dropdownFrame.Parent = ContentContainer
+        
+        local dropdownCorner = Instance.new("UICorner")
+        dropdownCorner.CornerRadius = UDim.new(0, 5)
+        dropdownCorner.Parent = dropdownFrame
+        
+        local dropdownLabel = Instance.new("TextLabel")
+        dropdownLabel.Size = UDim2.new(0.85, 0, 1, 0)
+        dropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+        dropdownLabel.BackgroundTransparency = 1
+        dropdownLabel.Text = "Selecionar..."
+        dropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        dropdownLabel.Font = Enum.Font.Gotham
+        dropdownLabel.TextSize = 12
+        dropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+        dropdownLabel.ZIndex = 11
+        dropdownLabel.Parent = dropdownFrame
+        
+        local dropdownIcon = Instance.new("TextLabel")
+        dropdownIcon.Size = UDim2.new(0.15, -10, 1, 0)
+        dropdownIcon.Position = UDim2.new(0.85, 0, 0, 0)
+        dropdownIcon.BackgroundTransparency = 1
+        dropdownIcon.Text = "..."
+        dropdownIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+        dropdownIcon.Font = Enum.Font.GothamBold
+        dropdownIcon.TextSize = 14
+        dropdownIcon.TextXAlignment = Enum.TextXAlignment.Right
+        dropdownIcon.ZIndex = 11
+        dropdownIcon.Parent = dropdownFrame
+        
+        local dropdownButton = Instance.new("TextButton")
+        dropdownButton.Size = UDim2.new(1, 0, 1, 0)
+        dropdownButton.BackgroundTransparency = 1
+        dropdownButton.Text = ""
+        dropdownButton.ZIndex = 12
+        dropdownButton.Parent = dropdownFrame
+        
+        local dropdownOpen = false
+        local dropdownList = Instance.new("ScrollingFrame")
+        dropdownList.Size = UDim2.new(1, 0, 0, 0)
+        dropdownList.Position = UDim2.new(0, 0, 1, 5)
+        dropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        dropdownList.BorderSizePixel = 0
+        dropdownList.Visible = false
+        dropdownList.ClipsDescendants = true
+        dropdownList.ScrollBarThickness = 4
+        dropdownList.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 255)
+        dropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        dropdownList.ZIndex = 15
+        dropdownList.Parent = dropdownFrame
+        
+        local dropdownListCorner = Instance.new("UICorner")
+        dropdownListCorner.CornerRadius = UDim.new(0, 5)
+        dropdownListCorner.Parent = dropdownList
+        
+        local dropdownLayout = Instance.new("UIListLayout")
+        dropdownLayout.Padding = UDim.new(0, 2)
+        dropdownLayout.Parent = dropdownList
+        
+        dropdownButton.MouseButton1Click:Connect(function()
+            dropdownOpen = not dropdownOpen
+            if dropdownOpen then
+                -- Limpar lista
+                for _, child in pairs(dropdownList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        child:Destroy()
+                    end
+                end
+                
+                -- Adicionar jogadores
+                local playerCount = 0
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer then
+                        playerCount = playerCount + 1
+                        local playerBtn = Instance.new("TextButton")
+                        playerBtn.Size = UDim2.new(1, -5, 0, 30)
+                        playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        playerBtn.BorderSizePixel = 0
+                        playerBtn.Text = player.Name
+                        playerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        playerBtn.Font = Enum.Font.Gotham
+                        playerBtn.TextSize = 12
+                        playerBtn.ZIndex = 16
+                        playerBtn.Parent = dropdownList
+                        
+                        playerBtn.MouseEnter:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                        end)
+                        
+                        playerBtn.MouseLeave:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        end)
+                        
+                        playerBtn.MouseButton1Click:Connect(function()
+                            selectedPlayer = player
+                            dropdownLabel.Text = player.Name
+                            dropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            dropdownOpen = false
+                            dropdownList.Visible = false
+                            dropdownList.Size = UDim2.new(1, 0, 0, 0)
+                        end)
+                    end
+                end
+                
+                dropdownList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 32)
+                local listHeight = math.min(playerCount * 32, 150)
+                dropdownList.Size = UDim2.new(1, 0, 0, listHeight)
+                dropdownList.Visible = true
+            else
+                dropdownList.Visible = false
+                dropdownList.Size = UDim2.new(1, 0, 0, 0)
+            end
+        end)
+        
+        -- Espaço pequeno entre dropdown e botão
+        createSpacer(10, ContentContainer)
+        
+        -- Botão Matar Jogador
+        createButton("Matar Jogador ➜", function()
+            if selectedPlayer then
+                killPlayer(selectedPlayer)
+            else
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Godzilla Hub";
+                    Text = "Selecione um jogador primeiro!";
+                    Duration = 3;
+                })
+            end
+        end, ContentContainer)
+        
+        createSpacer(20, ContentContainer)
+        
+        -- Título Teleportar ao jogador
+        createLabel("Teleportar ao jogador", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Dropdown de jogadores para teleporte
+        local teleportDropdownFrame = Instance.new("Frame")
+        teleportDropdownFrame.Size = UDim2.new(1, -20, 0, 40)
+        teleportDropdownFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        teleportDropdownFrame.BorderSizePixel = 0
+        teleportDropdownFrame.ZIndex = 10
+        teleportDropdownFrame.Parent = ContentContainer
+        
+        local teleportDropdownCorner = Instance.new("UICorner")
+        teleportDropdownCorner.CornerRadius = UDim.new(0, 5)
+        teleportDropdownCorner.Parent = teleportDropdownFrame
+        
+        local teleportDropdownLabel = Instance.new("TextLabel")
+        teleportDropdownLabel.Size = UDim2.new(0.85, 0, 1, 0)
+        teleportDropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+        teleportDropdownLabel.BackgroundTransparency = 1
+        teleportDropdownLabel.Text = "Selecionar..."
+        teleportDropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        teleportDropdownLabel.Font = Enum.Font.Gotham
+        teleportDropdownLabel.TextSize = 12
+        teleportDropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+        teleportDropdownLabel.ZIndex = 11
+        teleportDropdownLabel.Parent = teleportDropdownFrame
+        
+        local teleportDropdownIcon = Instance.new("TextLabel")
+        teleportDropdownIcon.Size = UDim2.new(0.15, -10, 1, 0)
+        teleportDropdownIcon.Position = UDim2.new(0.85, 0, 0, 0)
+        teleportDropdownIcon.BackgroundTransparency = 1
+        teleportDropdownIcon.Text = "..."
+        teleportDropdownIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+        teleportDropdownIcon.Font = Enum.Font.GothamBold
+        teleportDropdownIcon.TextSize = 14
+        teleportDropdownIcon.TextXAlignment = Enum.TextXAlignment.Right
+        teleportDropdownIcon.ZIndex = 11
+        teleportDropdownIcon.Parent = teleportDropdownFrame
+        
+        local teleportDropdownButton = Instance.new("TextButton")
+        teleportDropdownButton.Size = UDim2.new(1, 0, 1, 0)
+        teleportDropdownButton.BackgroundTransparency = 1
+        teleportDropdownButton.Text = ""
+        teleportDropdownButton.ZIndex = 12
+        teleportDropdownButton.Parent = teleportDropdownFrame
+        
+        local teleportDropdownOpen = false
+        local selectedTeleportPlayer = nil
+        local teleportDropdownList = Instance.new("ScrollingFrame")
+        teleportDropdownList.Size = UDim2.new(1, 0, 0, 0)
+        teleportDropdownList.Position = UDim2.new(0, 0, 1, 5)
+        teleportDropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        teleportDropdownList.BorderSizePixel = 0
+        teleportDropdownList.Visible = false
+        teleportDropdownList.ClipsDescendants = true
+        teleportDropdownList.ScrollBarThickness = 4
+        teleportDropdownList.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 255)
+        teleportDropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        teleportDropdownList.ZIndex = 15
+        teleportDropdownList.Parent = teleportDropdownFrame
+        
+        local teleportDropdownListCorner = Instance.new("UICorner")
+        teleportDropdownListCorner.CornerRadius = UDim.new(0, 5)
+        teleportDropdownListCorner.Parent = teleportDropdownList
+        
+        local teleportDropdownLayout = Instance.new("UIListLayout")
+        teleportDropdownLayout.Padding = UDim.new(0, 2)
+        teleportDropdownLayout.Parent = teleportDropdownList
+        
+        teleportDropdownButton.MouseButton1Click:Connect(function()
+            teleportDropdownOpen = not teleportDropdownOpen
+            if teleportDropdownOpen then
+                -- Limpar lista
+                for _, child in pairs(teleportDropdownList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        child:Destroy()
+                    end
+                end
+                
+                -- Adicionar jogadores
+                local playerCount = 0
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer then
+                        playerCount = playerCount + 1
+                        local playerBtn = Instance.new("TextButton")
+                        playerBtn.Size = UDim2.new(1, -5, 0, 30)
+                        playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        playerBtn.BorderSizePixel = 0
+                        playerBtn.Text = player.Name
+                        playerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        playerBtn.Font = Enum.Font.Gotham
+                        playerBtn.TextSize = 12
+                        playerBtn.ZIndex = 16
+                        playerBtn.Parent = teleportDropdownList
+                        
+                        playerBtn.MouseEnter:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                        end)
+                        
+                        playerBtn.MouseLeave:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        end)
+                        
+                        playerBtn.MouseButton1Click:Connect(function()
+                            selectedTeleportPlayer = player
+                            teleportDropdownLabel.Text = player.Name
+                            teleportDropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            teleportDropdownOpen = false
+                            teleportDropdownList.Visible = false
+                            teleportDropdownList.Size = UDim2.new(1, 0, 0, 0)
+                        end)
+                    end
+                end
+                
+                teleportDropdownList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 32)
+                local listHeight = math.min(playerCount * 32, 150)
+                teleportDropdownList.Size = UDim2.new(1, 0, 0, listHeight)
+                teleportDropdownList.Visible = true
+            else
+                teleportDropdownList.Visible = false
+                teleportDropdownList.Size = UDim2.new(1, 0, 0, 0)
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Botão Teleportar
+        createButton("Teleportar ➜", function()
+            if selectedTeleportPlayer and selectedTeleportPlayer.Character and selectedTeleportPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = selectedTeleportPlayer.Character.HumanoidRootPart.CFrame
+                    game.StarterGui:SetCore("SendNotification", {
+                        Title = "Godzilla Hub";
+                        Text = "Teleportado para " .. selectedTeleportPlayer.Name .. "!";
+                        Duration = 3;
+                    })
+                end
+            else
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Godzilla Hub";
+                    Text = "Selecione um jogador primeiro!";
+                    Duration = 3;
+                })
+            end
+        end, ContentContainer)
+        
+        createSpacer(20, ContentContainer)
+        
+        -- Título Roubar Jogador
+        createLabel("Roubar Jogador", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        -- Dropdown de jogadores para roubar
+        local roubarDropdownFrame = Instance.new("Frame")
+        roubarDropdownFrame.Size = UDim2.new(1, -20, 0, 40)
+        roubarDropdownFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        roubarDropdownFrame.BorderSizePixel = 0
+        roubarDropdownFrame.ZIndex = 10
+        roubarDropdownFrame.Parent = ContentContainer
+        
+        local roubarDropdownCorner = Instance.new("UICorner")
+        roubarDropdownCorner.CornerRadius = UDim.new(0, 5)
+        roubarDropdownCorner.Parent = roubarDropdownFrame
+        
+        local roubarDropdownLabel = Instance.new("TextLabel")
+        roubarDropdownLabel.Size = UDim2.new(0.85, 0, 1, 0)
+        roubarDropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+        roubarDropdownLabel.BackgroundTransparency = 1
+        roubarDropdownLabel.Text = "Selecionar..."
+        roubarDropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        roubarDropdownLabel.Font = Enum.Font.Gotham
+        roubarDropdownLabel.TextSize = 12
+        roubarDropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+        roubarDropdownLabel.ZIndex = 11
+        roubarDropdownLabel.Parent = roubarDropdownFrame
+        
+        local roubarDropdownIcon = Instance.new("TextLabel")
+        roubarDropdownIcon.Size = UDim2.new(0.15, -10, 1, 0)
+        roubarDropdownIcon.Position = UDim2.new(0.85, 0, 0, 0)
+        roubarDropdownIcon.BackgroundTransparency = 1
+        roubarDropdownIcon.Text = "..."
+        roubarDropdownIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+        roubarDropdownIcon.Font = Enum.Font.GothamBold
+        roubarDropdownIcon.TextSize = 14
+        roubarDropdownIcon.TextXAlignment = Enum.TextXAlignment.Right
+        roubarDropdownIcon.ZIndex = 11
+        roubarDropdownIcon.Parent = roubarDropdownFrame
+        
+        local roubarDropdownButton = Instance.new("TextButton")
+        roubarDropdownButton.Size = UDim2.new(1, 0, 1, 0)
+        roubarDropdownButton.BackgroundTransparency = 1
+        roubarDropdownButton.Text = ""
+        roubarDropdownButton.ZIndex = 12
+        roubarDropdownButton.Parent = roubarDropdownFrame
+        
+        local roubarDropdownOpen = false
+        local selectedRoubarPlayer = nil
+        local roubarDropdownList = Instance.new("ScrollingFrame")
+        roubarDropdownList.Size = UDim2.new(1, 0, 0, 0)
+        roubarDropdownList.Position = UDim2.new(0, 0, 1, 5)
+        roubarDropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        roubarDropdownList.BorderSizePixel = 0
+        roubarDropdownList.Visible = false
+        roubarDropdownList.ClipsDescendants = true
+        roubarDropdownList.ScrollBarThickness = 4
+        roubarDropdownList.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 255)
+        roubarDropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        roubarDropdownList.ZIndex = 15
+        roubarDropdownList.Parent = roubarDropdownFrame
+        
+        local roubarDropdownListCorner = Instance.new("UICorner")
+        roubarDropdownListCorner.CornerRadius = UDim.new(0, 5)
+        roubarDropdownListCorner.Parent = roubarDropdownList
+        
+        local roubarDropdownLayout = Instance.new("UIListLayout")
+        roubarDropdownLayout.Padding = UDim.new(0, 2)
+        roubarDropdownLayout.Parent = roubarDropdownList
+        
+        roubarDropdownButton.MouseButton1Click:Connect(function()
+            roubarDropdownOpen = not roubarDropdownOpen
+            if roubarDropdownOpen then
+                -- Limpar lista
+                for _, child in pairs(roubarDropdownList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        child:Destroy()
+                    end
+                end
+                
+                -- Adicionar jogadores
+                local playerCount = 0
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer then
+                        playerCount = playerCount + 1
+                        local playerBtn = Instance.new("TextButton")
+                        playerBtn.Size = UDim2.new(1, -5, 0, 30)
+                        playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        playerBtn.BorderSizePixel = 0
+                        playerBtn.Text = player.Name
+                        playerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        playerBtn.Font = Enum.Font.Gotham
+                        playerBtn.TextSize = 12
+                        playerBtn.ZIndex = 16
+                        playerBtn.Parent = roubarDropdownList
+                        
+                        playerBtn.MouseEnter:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                        end)
+                        
+                        playerBtn.MouseLeave:Connect(function()
+                            playerBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                        end)
+                        
+                        playerBtn.MouseButton1Click:Connect(function()
+                            selectedRoubarPlayer = player
+                            roubarDropdownLabel.Text = player.Name
+                            roubarDropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            roubarDropdownOpen = false
+                            roubarDropdownList.Visible = false
+                            roubarDropdownList.Size = UDim2.new(1, 0, 0, 0)
+                        end)
+                    end
+                end
+                
+                roubarDropdownList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 32)
+                local listHeight = math.min(playerCount * 32, 150)
+                roubarDropdownList.Size = UDim2.new(1, 0, 0, listHeight)
+                roubarDropdownList.Visible = true
+            else
+                roubarDropdownList.Visible = false
+                roubarDropdownList.Size = UDim2.new(1, 0, 0, 0)
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Botão Roubar
+        createButton("Roubar ➜", function()
+            if selectedRoubarPlayer and selectedRoubarPlayer.Character and selectedRoubarPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    -- Salvar posição original
+                    local originalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+                    
+                    -- Iniciar processo de roubar
+                    spawn(function()
+                        local vim = game:GetService("VirtualInputManager")
+                        local startTime = tick()
+                        local stopRobar = false
+                        
+                        -- Thread para manter F pressionado
+                        spawn(function()
+                            while not stopRobar do
+                                vim:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+                                wait(0.1)
+                            end
+                            vim:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+                        end)
+                        
+                        -- Teleportar a cada 1 segundo por 4 segundos
+                        while tick() - startTime < 4 do
+                            -- Teleportar atrás do jogador
+                            if selectedRoubarPlayer.Character and selectedRoubarPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                                local targetPos = selectedRoubarPlayer.Character.HumanoidRootPart.CFrame
+                                LocalPlayer.Character.HumanoidRootPart.CFrame = targetPos * CFrame.new(0, 0, 3)
+                            end
+                            
+                            wait(1)
+                        end
+                        
+                        -- Parar de pressionar F
+                        stopRobar = true
+                        wait(0.2)
+                        
+                        -- Voltar para posição original
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = originalPosition
+                        end
+                        
+                        game.StarterGui:SetCore("SendNotification", {
+                            Title = "Godzilla Hub";
+                            Text = "Roubo concluído!";
+                            Duration = 3;
+                        })
+                    end)
+                    
+                    game.StarterGui:SetCore("SendNotification", {
+                        Title = "Godzilla Hub";
+                        Text = "Roubando " .. selectedRoubarPlayer.Name .. "...";
+                        Duration = 3;
+                    })
+                end
+            else
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Godzilla Hub";
+                    Text = "Selecione um jogador primeiro!";
+                    Duration = 3;
+                })
+            end
+        end, ContentContainer)
+        
+    elseif tabName == "Proteção" then
+        -- Variáveis de estado para proteções
+        local godModeEnabled = true -- Ativado por padrão
+        local antiFlingEnabled = false
+        local antiVoidEnabled = false
+        local antiLagEnabled = false
+        local antiRouboEnabled = false
+        
+        -- GodMode (ativado automaticamente ao carregar)
+        local function enableGodMode()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                
+                -- Tornar invencível
+                if LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                end
+            end
+        end
+        
+        -- Ativar GodMode automaticamente
+        enableGodMode()
+        
+        -- Toggle GodMode
+        local godModeToggle = Instance.new("Frame")
+        godModeToggle.Size = UDim2.new(1, -20, 0, 40)
+        godModeToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        godModeToggle.BorderSizePixel = 0
+        godModeToggle.Parent = ContentContainer
+        
+        local godModeCorner = Instance.new("UICorner")
+        godModeCorner.CornerRadius = UDim.new(0, 5)
+        godModeCorner.Parent = godModeToggle
+        
+        local godModeLabel = Instance.new("TextLabel")
+        godModeLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        godModeLabel.Position = UDim2.new(0, 10, 0, 0)
+        godModeLabel.BackgroundTransparency = 1
+        godModeLabel.Text = "GodMode"
+        godModeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        godModeLabel.Font = Enum.Font.GothamBold
+        godModeLabel.TextSize = 14
+        godModeLabel.TextXAlignment = Enum.TextXAlignment.Left
+        godModeLabel.Parent = godModeToggle
+        
+        local godModeStatus = Instance.new("TextLabel")
+        godModeStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        godModeStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        godModeStatus.BackgroundTransparency = 1
+        godModeStatus.Text = "On"
+        godModeStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+        godModeStatus.Font = Enum.Font.GothamBold
+        godModeStatus.TextSize = 14
+        godModeStatus.TextXAlignment = Enum.TextXAlignment.Right
+        godModeStatus.Parent = godModeToggle
+        
+        local godModeButton = Instance.new("TextButton")
+        godModeButton.Size = UDim2.new(1, 0, 1, 0)
+        godModeButton.BackgroundTransparency = 1
+        godModeButton.Text = ""
+        godModeButton.Parent = godModeToggle
+        
+        godModeButton.MouseButton1Click:Connect(function()
+            godModeEnabled = not godModeEnabled
+            if godModeEnabled then
+                godModeStatus.Text = "On"
+                godModeStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                enableGodMode()
+            else
+                godModeStatus.Text = "Off"
+                godModeStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Anti Fling
+        local antiFlingToggle = Instance.new("Frame")
+        antiFlingToggle.Size = UDim2.new(1, -20, 0, 40)
+        antiFlingToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        antiFlingToggle.BorderSizePixel = 0
+        antiFlingToggle.Parent = ContentContainer
+        
+        local antiFlingCorner = Instance.new("UICorner")
+        antiFlingCorner.CornerRadius = UDim.new(0, 5)
+        antiFlingCorner.Parent = antiFlingToggle
+        
+        local antiFlingLabel = Instance.new("TextLabel")
+        antiFlingLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        antiFlingLabel.Position = UDim2.new(0, 10, 0, 0)
+        antiFlingLabel.BackgroundTransparency = 1
+        antiFlingLabel.Text = "Anti Fling"
+        antiFlingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        antiFlingLabel.Font = Enum.Font.GothamBold
+        antiFlingLabel.TextSize = 14
+        antiFlingLabel.TextXAlignment = Enum.TextXAlignment.Left
+        antiFlingLabel.Parent = antiFlingToggle
+        
+        local antiFlingStatus = Instance.new("TextLabel")
+        antiFlingStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        antiFlingStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        antiFlingStatus.BackgroundTransparency = 1
+        antiFlingStatus.Text = "Off"
+        antiFlingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        antiFlingStatus.Font = Enum.Font.GothamBold
+        antiFlingStatus.TextSize = 14
+        antiFlingStatus.TextXAlignment = Enum.TextXAlignment.Right
+        antiFlingStatus.Parent = antiFlingToggle
+        
+        local antiFlingButton = Instance.new("TextButton")
+        antiFlingButton.Size = UDim2.new(1, 0, 1, 0)
+        antiFlingButton.BackgroundTransparency = 1
+        antiFlingButton.Text = ""
+        antiFlingButton.Parent = antiFlingToggle
+        
+        local antiFlingConnection = nil
+        antiFlingButton.MouseButton1Click:Connect(function()
+            antiFlingEnabled = not antiFlingEnabled
+            if antiFlingEnabled then
+                antiFlingStatus.Text = "On"
+                antiFlingStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                -- Anti Fling
+                antiFlingConnection = RunService.Heartbeat:Connect(function()
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = LocalPlayer.Character.HumanoidRootPart
+                        hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                        hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                    end
+                end)
+            else
+                antiFlingStatus.Text = "Off"
+                antiFlingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+                if antiFlingConnection then
+                    antiFlingConnection:Disconnect()
+                end
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Anti Void
+        local antiVoidToggle = Instance.new("Frame")
+        antiVoidToggle.Size = UDim2.new(1, -20, 0, 40)
+        antiVoidToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        antiVoidToggle.BorderSizePixel = 0
+        antiVoidToggle.Parent = ContentContainer
+        
+        local antiVoidCorner = Instance.new("UICorner")
+        antiVoidCorner.CornerRadius = UDim.new(0, 5)
+        antiVoidCorner.Parent = antiVoidToggle
+        
+        local antiVoidLabel = Instance.new("TextLabel")
+        antiVoidLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        antiVoidLabel.Position = UDim2.new(0, 10, 0, 0)
+        antiVoidLabel.BackgroundTransparency = 1
+        antiVoidLabel.Text = "Anti Void"
+        antiVoidLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        antiVoidLabel.Font = Enum.Font.GothamBold
+        antiVoidLabel.TextSize = 14
+        antiVoidLabel.TextXAlignment = Enum.TextXAlignment.Left
+        antiVoidLabel.Parent = antiVoidToggle
+        
+        local antiVoidStatus = Instance.new("TextLabel")
+        antiVoidStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        antiVoidStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        antiVoidStatus.BackgroundTransparency = 1
+        antiVoidStatus.Text = "Off"
+        antiVoidStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        antiVoidStatus.Font = Enum.Font.GothamBold
+        antiVoidStatus.TextSize = 14
+        antiVoidStatus.TextXAlignment = Enum.TextXAlignment.Right
+        antiVoidStatus.Parent = antiVoidToggle
+        
+        local antiVoidButton = Instance.new("TextButton")
+        antiVoidButton.Size = UDim2.new(1, 0, 1, 0)
+        antiVoidButton.BackgroundTransparency = 1
+        antiVoidButton.Text = ""
+        antiVoidButton.Parent = antiVoidToggle
+        
+        local antiVoidConnection = nil
+        local lastSafePosition = nil
+        antiVoidButton.MouseButton1Click:Connect(function()
+            antiVoidEnabled = not antiVoidEnabled
+            if antiVoidEnabled then
+                antiVoidStatus.Text = "On"
+                antiVoidStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                -- Anti Void
+                antiVoidConnection = RunService.Heartbeat:Connect(function()
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = LocalPlayer.Character.HumanoidRootPart
+                        
+                        -- Se estiver acima de Y = -50, salvar como posição segura
+                        if hrp.Position.Y > -50 then
+                            lastSafePosition = hrp.CFrame
+                        end
+                        
+                        -- Se cair no void (Y < -50), teleportar de volta
+                        if hrp.Position.Y < -50 and lastSafePosition then
+                            hrp.CFrame = lastSafePosition
+                        end
+                    end
+                end)
+            else
+                antiVoidStatus.Text = "Off"
+                antiVoidStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+                if antiVoidConnection then
+                    antiVoidConnection:Disconnect()
+                end
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Anti Lag
+        local antiLagToggle = Instance.new("Frame")
+        antiLagToggle.Size = UDim2.new(1, -20, 0, 40)
+        antiLagToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        antiLagToggle.BorderSizePixel = 0
+        antiLagToggle.Parent = ContentContainer
+        
+        local antiLagCorner = Instance.new("UICorner")
+        antiLagCorner.CornerRadius = UDim.new(0, 5)
+        antiLagCorner.Parent = antiLagToggle
+        
+        local antiLagLabel = Instance.new("TextLabel")
+        antiLagLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        antiLagLabel.Position = UDim2.new(0, 10, 0, 0)
+        antiLagLabel.BackgroundTransparency = 1
+        antiLagLabel.Text = "Anti Lag"
+        antiLagLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        antiLagLabel.Font = Enum.Font.GothamBold
+        antiLagLabel.TextSize = 14
+        antiLagLabel.TextXAlignment = Enum.TextXAlignment.Left
+        antiLagLabel.Parent = antiLagToggle
+        
+        local antiLagStatus = Instance.new("TextLabel")
+        antiLagStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        antiLagStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        antiLagStatus.BackgroundTransparency = 1
+        antiLagStatus.Text = "Off"
+        antiLagStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        antiLagStatus.Font = Enum.Font.GothamBold
+        antiLagStatus.TextSize = 14
+        antiLagStatus.TextXAlignment = Enum.TextXAlignment.Right
+        antiLagStatus.Parent = antiLagToggle
+        
+        local antiLagButton = Instance.new("TextButton")
+        antiLagButton.Size = UDim2.new(1, 0, 1, 0)
+        antiLagButton.BackgroundTransparency = 1
+        antiLagButton.Text = ""
+        antiLagButton.Parent = antiLagToggle
+        
+        antiLagButton.MouseButton1Click:Connect(function()
+            antiLagEnabled = not antiLagEnabled
+            if antiLagEnabled then
+                antiLagStatus.Text = "On"
+                antiLagStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                -- Anti Lag - Reduzir qualidade gráfica
+                settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+                
+                -- Remover efeitos visuais desnecessários
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+                        obj.Enabled = false
+                    end
+                end
+            else
+                antiLagStatus.Text = "Off"
+                antiLagStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+                settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+            end
+        end)
+        
+        createSpacer(10, ContentContainer)
+        
+        -- Anti Roubo (Anti Ragdoll)
+        local antiRouboToggle = Instance.new("Frame")
+        antiRouboToggle.Size = UDim2.new(1, -20, 0, 40)
+        antiRouboToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        antiRouboToggle.BorderSizePixel = 0
+        antiRouboToggle.Parent = ContentContainer
+        
+        local antiRouboCorner = Instance.new("UICorner")
+        antiRouboCorner.CornerRadius = UDim.new(0, 5)
+        antiRouboCorner.Parent = antiRouboToggle
+        
+        local antiRouboLabel = Instance.new("TextLabel")
+        antiRouboLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        antiRouboLabel.Position = UDim2.new(0, 10, 0, 0)
+        antiRouboLabel.BackgroundTransparency = 1
+        antiRouboLabel.Text = "Anti Roubo"
+        antiRouboLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        antiRouboLabel.Font = Enum.Font.GothamBold
+        antiRouboLabel.TextSize = 14
+        antiRouboLabel.TextXAlignment = Enum.TextXAlignment.Left
+        antiRouboLabel.Parent = antiRouboToggle
+        
+        local antiRouboStatus = Instance.new("TextLabel")
+        antiRouboStatus.Size = UDim2.new(0.3, -10, 1, 0)
+        antiRouboStatus.Position = UDim2.new(0.7, 0, 0, 0)
+        antiRouboStatus.BackgroundTransparency = 1
+        antiRouboStatus.Text = "Off"
+        antiRouboStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        antiRouboStatus.Font = Enum.Font.GothamBold
+        antiRouboStatus.TextSize = 14
+        antiRouboStatus.TextXAlignment = Enum.TextXAlignment.Right
+        antiRouboStatus.Parent = antiRouboToggle
+        
+        local antiRouboButton = Instance.new("TextButton")
+        antiRouboButton.Size = UDim2.new(1, 0, 1, 0)
+        antiRouboButton.BackgroundTransparency = 1
+        antiRouboButton.Text = ""
+        antiRouboButton.Parent = antiRouboToggle
+        
+        local antiRouboConnection = nil
+        antiRouboButton.MouseButton1Click:Connect(function()
+            antiRouboEnabled = not antiRouboEnabled
+            if antiRouboEnabled then
+                antiRouboStatus.Text = "On"
+                antiRouboStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                -- Anti Ragdoll com pulo
+                antiRouboConnection = RunService.Heartbeat:Connect(function()
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                        local humanoid = LocalPlayer.Character.Humanoid
+                        
+                        -- Verificar se está em ragdoll
+                        if humanoid:GetState() == Enum.HumanoidStateType.FallingDown or humanoid:GetState() == Enum.HumanoidStateType.Ragdoll then
+                            -- Fazer o personagem pular
+                            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                        end
+                        
+                        -- Desativar estados de ragdoll
+                        humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                        humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                    end
+                end)
+            else
+                antiRouboStatus.Text = "Off"
+                antiRouboStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+                if antiRouboConnection then
+                    antiRouboConnection:Disconnect()
+                end
+                
+                -- Reativar estados de ragdoll quando desligado
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+                    LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+                end
+            end
+        end)
+        
+    elseif tabName == "Farm" then
+        -- Auto Farm de Báu
+        createLabel("Auto Farm de Báu", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        createButton("Auto Farm de Báu ➜", function()
+            pcall(function()
+                loadstring([[
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local isRunning = false
+local currentCoroutine = nil
+local godmodeEnabled = false
+local godmodeConnection = nil
+local autoServerHop = true
+local antiVoidConnection = nil
+local autoClickerEnabled = false
+local function findAllLids()
+    local lids = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj.Name == "Lid" then
+            table.insert(lids, obj)
+        end
+    end
+    return lids
+end
+local function enableNoclip()
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+end
+local function disableNoclip()
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.CanCollide = true
+        end
+    end
+end
+local function enableGodmode()
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid then return end
+    godmodeEnabled = true
+    humanoid.MaxHealth = math.huge
+    humanoid.Health = math.huge
+    godmodeConnection = humanoid.HealthChanged:Connect(function(health)
+        if godmodeEnabled and health < humanoid.MaxHealth then
+            humanoid.Health = humanoid.MaxHealth
+        end
+    end)
+end
+local function disableGodmode()
+    godmodeEnabled = false
+    if godmodeConnection then
+        godmodeConnection:Disconnect()
+        godmodeConnection = nil
+    end
+    local humanoid = character:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.MaxHealth = 100
+        humanoid.Health = 100
+    end
+end
+local function serverHop()
+    local success, result = pcall(function()
+        local servers = {}
+        local cursor = ""
+        repeat
+            local success, page = pcall(function()
+                return HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100" .. (cursor and "&cursor=" .. cursor or "")))
+            end)
+            if success and page then
+                for _, server in pairs(page.data) do
+                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                        table.insert(servers, server.id)
+                    end
+                end
+                cursor = page.nextPageCursor
+            else
+                break
+            end
+        until not cursor
+        if #servers > 0 then
+            local randomServer = servers[math.random(1, #servers)]
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer, player)
+        else
+            TeleportService:Teleport(game.PlaceId, player)
+        end
+    end)
+    if not success then
+        pcall(function() TeleportService:Teleport(game.PlaceId, player) end)
+    end
+end
+local function setupAntiVoid()
+    antiVoidConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart or not humanoidRootPart.Parent then return end
+        local currentPosition = humanoidRootPart.Position
+        if currentPosition.Y < -100 then
+            local humanoid = character:FindFirstChild("Humanoid")
+            local nearestLid = nil
+            local nearestDistance = math.huge
+            for _, obj in pairs(workspace:GetDescendants()) do
+                if obj:IsA("Model") and obj.Name == "Lid" then
+                    local lidPart = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                    if lidPart then
+                        local distance = (lidPart.Position - Vector3.new(currentPosition.X, 0, currentPosition.Z)).Magnitude
+                        if distance < nearestDistance then
+                            nearestDistance = distance
+                            nearestLid = lidPart
+                        end
+                    end
+                end
+            end
+            if nearestLid then
+                humanoidRootPart.CFrame = CFrame.new(nearestLid.Position + Vector3.new(0, 5, 0))
+            else
+                local newPosition = Vector3.new(currentPosition.X, currentPosition.Y + 250, currentPosition.Z)
+                humanoidRootPart.CFrame = CFrame.new(newPosition)
+            end
+            humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+            humanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+            if humanoid then
+                humanoid.PlatformStand = false
+                humanoid.Sit = false
+                humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+            end
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end)
+end
+local function pressF()
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+    wait(4)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+end
+local function silentTeleport(targetPosition)
+    local humanoid = character:FindFirstChild("Humanoid")
+    if humanoid then humanoid.PlatformStand = true end
+    enableNoclip()
+    humanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 3, 0))
+    humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+    humanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+    wait(0.1)
+    if humanoid then humanoid.PlatformStand = false end
+end
+local function startNavigation()
+    isRunning = true
+    currentCoroutine = coroutine.create(function()
+        local lids = findAllLids()
+        if #lids == 0 then isRunning = false return end
+        for i, lid in ipairs(lids) do
+            if not isRunning then break end
+            local targetPart = lid.PrimaryPart or lid:FindFirstChildWhichIsA("BasePart")
+            if targetPart then
+                silentTeleport(targetPart.Position)
+                if autoClickerEnabled then wait(0.2) pressF() end
+                if isRunning and i < #lids then wait(4) end
+            end
+        end
+        if isRunning and autoServerHop then wait(1) serverHop() end
+        isRunning = false
+    end)
+    coroutine.resume(currentCoroutine)
+end
+local function stopNavigation()
+    isRunning = false
+    if currentCoroutine then currentCoroutine = nil end
+    disableNoclip()
+end
+local existingGui = player.PlayerGui:FindFirstChild("LidNavigatorUI")
+if existingGui then existingGui:Destroy() end
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LidNavigatorUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 200, 0, 225)
+mainFrame.Position = UDim2.new(0.5, -100, 0.5, -112)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(0, 170, 255)
+mainFrame.Parent = screenGui
+local corner = Instance.new("UICorner") corner.CornerRadius = UDim.new(0, 10) corner.Parent = mainFrame
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+title.BorderSizePixel = 0
+title.Text = "Farm Chest"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
+local titleCorner = Instance.new("UICorner") titleCorner.CornerRadius = UDim.new(0, 10) titleCorner.Parent = title
+local startButton = Instance.new("TextButton")
+startButton.Size = UDim2.new(0, 160, 0, 30)
+startButton.Position = UDim2.new(0.5, -80, 0, 45)
+startButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+startButton.Text = "▶ Play"
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.TextSize = 14
+startButton.Font = Enum.Font.GothamBold
+startButton.BorderSizePixel = 0
+startButton.Parent = mainFrame
+local startCorner = Instance.new("UICorner") startCorner.CornerRadius = UDim.new(0, 6) startCorner.Parent = startButton
+local stopButton = Instance.new("TextButton")
+stopButton.Size = UDim2.new(0, 160, 0, 30)
+stopButton.Position = UDim2.new(0.5, -80, 0, 80)
+stopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+stopButton.Text = "■ Stop"
+stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopButton.TextSize = 14
+stopButton.Font = Enum.Font.GothamBold
+stopButton.BorderSizePixel = 0
+stopButton.Parent = mainFrame
+local stopCorner = Instance.new("UICorner") stopCorner.CornerRadius = UDim.new(0, 6) stopCorner.Parent = stopButton
+local autoClickerButton = Instance.new("TextButton")
+autoClickerButton.Size = UDim2.new(0, 160, 0, 30)
+autoClickerButton.Position = UDim2.new(0.5, -80, 0, 115)
+autoClickerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+autoClickerButton.Text = "⌨️ Auto Press F: OFF"
+autoClickerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoClickerButton.TextSize = 13
+autoClickerButton.Font = Enum.Font.GothamBold
+autoClickerButton.BorderSizePixel = 0
+autoClickerButton.Parent = mainFrame
+local autoClickerCorner = Instance.new("UICorner") autoClickerCorner.CornerRadius = UDim.new(0, 6) autoClickerCorner.Parent = autoClickerButton
+startButton.MouseButton1Click:Connect(function()
+    if not isRunning then
+        character = player.Character or player.CharacterAdded:Wait()
+        humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        startNavigation()
+        startButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    end
+end)
+stopButton.MouseButton1Click:Connect(function()
+    if isRunning then
+        stopNavigation()
+        startButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    end
+end)
+autoClickerButton.MouseButton1Click:Connect(function()
+    autoClickerEnabled = not autoClickerEnabled
+    if autoClickerEnabled then
+        autoClickerButton.Text = "⌨️ Auto Press F: ON"
+        autoClickerButton.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
+    else
+        autoClickerButton.Text = "⌨️ Auto Press F: OFF"
+        autoClickerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    end
+end)
+setupAntiVoid()
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    if antiVoidConnection then antiVoidConnection:Disconnect() end
+    wait(1)
+    setupAntiVoid()
+end)
+                ]])()
+            end)
+        end, ContentContainer)
+        
+        createSpacer(15, ContentContainer)
+        
+        -- Auto Farm de Banco
+        createLabel("Auto Farm de Banco", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        createButton("Auto Farm de Banco ➜", function()
+            pcall(function()
+                loadstring([[
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local scriptAtivo = false
+local godModeAtivado = false
+local cofres = {
+    Vector3.new(-253.62, 14.00, -179.14), Vector3.new(1587.28, 122.00, 1679.60),
+    Vector3.new(1574.83, 122.00, 1679.29), Vector3.new(1569.38, 122.00, 1675.40),
+    Vector3.new(1569.66, 122.00, 1667.08), Vector3.new(1906.17, 170.73, 3463.13),
+    Vector3.new(1910.97, 170.73, 3458.25), Vector3.new(-255.25, 14.00, -179.38),
+    Vector3.new(-254.14, 14.00, -169.64), Vector3.new(-272.07, 14.00, -177.09),
+    Vector3.new(-271.93, 14.00, -168.96), Vector3.new(870.30, 25.32, 200.04),
+    Vector3.new(874.84, 25.32, 195.75)
+}
+local acampamento = Vector3.new(-66.54, 75.44, 1287.72)
+local existingGui = player.PlayerGui:FindFirstChild("AutomacaoGUI")
+if existingGui then existingGui:Destroy() end
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutomacaoGUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 280, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+mainFrame.Parent = screenGui
+local corner = Instance.new("UICorner") corner.CornerRadius = UDim.new(0, 10) corner.Parent = mainFrame
+local titulo = Instance.new("TextLabel")
+titulo.Size = UDim2.new(1, 0, 0, 40)
+titulo.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+titulo.BorderSizePixel = 0
+titulo.Text = "Farm Automático"
+titulo.TextColor3 = Color3.fromRGB(255, 255, 255)
+titulo.TextSize = 20
+titulo.Font = Enum.Font.GothamBold
+titulo.Parent = mainFrame
+local tituloCorner = Instance.new("UICorner") tituloCorner.CornerRadius = UDim.new(0, 10) tituloCorner.Parent = titulo
+local statusGodMode = Instance.new("TextLabel")
+statusGodMode.Size = UDim2.new(1, -20, 0, 25)
+statusGodMode.Position = UDim2.new(0, 10, 0, 50)
+statusGodMode.BackgroundTransparency = 1
+statusGodMode.Text = "God Mod: Desativado"
+statusGodMode.TextColor3 = Color3.fromRGB(255, 100, 100)
+statusGodMode.TextSize = 14
+statusGodMode.Font = Enum.Font.Gotham
+statusGodMode.Parent = mainFrame
+local statusProgresso = Instance.new("TextLabel")
+statusProgresso.Size = UDim2.new(1, -20, 0, 25)
+statusProgresso.Position = UDim2.new(0, 10, 0, 80)
+statusProgresso.BackgroundTransparency = 1
+statusProgresso.Text = "Progresso: 0/" .. #cofres .. " cofres"
+statusProgresso.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusProgresso.TextSize = 13
+statusProgresso.Font = Enum.Font.Gotham
+statusProgresso.Parent = mainFrame
+local statusLocal = Instance.new("TextLabel")
+statusLocal.Size = UDim2.new(1, -20, 0, 25)
+statusLocal.Position = UDim2.new(0, 10, 0, 105)
+statusLocal.BackgroundTransparency = 1
+statusLocal.Text = "Local: Aguardando..."
+statusLocal.TextColor3 = Color3.fromRGB(150, 150, 150)
+statusLocal.TextSize = 12
+statusLocal.Font = Enum.Font.Gotham
+statusLocal.Parent = mainFrame
+local botaoIniciar = Instance.new("TextButton")
+botaoIniciar.Size = UDim2.new(0, 120, 0, 35)
+botaoIniciar.Position = UDim2.new(0, 15, 0, 135)
+botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+botaoIniciar.Text = "Iniciar"
+botaoIniciar.TextColor3 = Color3.fromRGB(255, 255, 255)
+botaoIniciar.TextSize = 16
+botaoIniciar.Font = Enum.Font.GothamBold
+botaoIniciar.Parent = mainFrame
+local iniciarCorner = Instance.new("UICorner") iniciarCorner.CornerRadius = UDim.new(0, 8) iniciarCorner.Parent = botaoIniciar
+local botaoParar = Instance.new("TextButton")
+botaoParar.Size = UDim2.new(0, 120, 0, 35)
+botaoParar.Position = UDim2.new(0, 145, 0, 135)
+botaoParar.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+botaoParar.Text = "Parar"
+botaoParar.TextColor3 = Color3.fromRGB(255, 255, 255)
+botaoParar.TextSize = 16
+botaoParar.Font = Enum.Font.GothamBold
+botaoParar.Parent = mainFrame
+local pararCorner = Instance.new("UICorner") pararCorner.CornerRadius = UDim.new(0, 8) pararCorner.Parent = botaoParar
+local function ativarGodMode()
+    if not godModeAtivado then
+        humanoid.MaxHealth = math.huge
+        humanoid.Health = math.huge
+        humanoid.HealthChanged:Connect(function(health)
+            if godModeAtivado and health < humanoid.MaxHealth then
+                humanoid.Health = humanoid.MaxHealth
+            end
+        end)
+        godModeAtivado = true
+        statusGodMode.Text = "God Mod: Ativado ✓"
+        statusGodMode.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end
+end
+local function teleportar(posicao, nomeLugar)
+    if character and humanoidRootPart then
+        humanoid.WalkSpeed = 0
+        task.wait(0.1)
+        humanoidRootPart.CFrame = CFrame.new(posicao)
+        humanoidRootPart.Anchored = true
+        task.wait(0.2)
+        humanoidRootPart.Anchored = false
+        humanoid.WalkSpeed = 16
+    end
+end
+local function manterFPressionada(segundos)
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    local tempoInicio = tick()
+    local tempoFim = tempoInicio + segundos
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+    while tick() < tempoFim and scriptAtivo do task.wait(0.05) end
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+end
+local function executarSequencia()
+    scriptAtivo = true
+    botaoIniciar.Text = "Executando..."
+    botaoIniciar.BackgroundColor3 = Color3.fromRGB(150, 150, 0)
+    for indiceCofre = 1, #cofres do
+        if not scriptAtivo then break end
+        local coordCofre = cofres[indiceCofre]
+        statusProgresso.Text = "Progresso: " .. (indiceCofre - 1) .. "/" .. #cofres .. " cofres"
+        statusLocal.Text = "Local: Indo para Cofre #" .. indiceCofre
+        teleportar(coordCofre, "Cofre #" .. indiceCofre)
+        task.wait(1.5)
+        statusLocal.Text = "Local: Cofre #" .. indiceCofre .. " (Coletando...)"
+        manterFPressionada(5)
+        task.wait(1)
+        manterFPressionada(10)
+        statusProgresso.Text = "Progresso: " .. indiceCofre .. "/" .. #cofres .. " cofres"
+        statusLocal.Text = "Local: Voltando ao Acampamento..."
+        teleportar(acampamento, "Acampamento")
+        task.wait(1.5)
+        statusLocal.Text = "Local: Acampamento"
+    end
+    if scriptAtivo then
+        statusProgresso.Text = "Completo: " .. #cofres .. "/" .. #cofres .. " cofres ✓"
+        statusProgresso.TextColor3 = Color3.fromRGB(100, 255, 100)
+        statusLocal.Text = "Local: Farm Concluído!"
+    end
+    scriptAtivo = false
+    botaoIniciar.Text = "Iniciar"
+    botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+end
+botaoIniciar.MouseButton1Click:Connect(function()
+    if not scriptAtivo then
+        statusProgresso.Text = "Progresso: 0/" .. #cofres .. " cofres"
+        statusProgresso.TextColor3 = Color3.fromRGB(200, 200, 200)
+        statusLocal.Text = "Local: Iniciando..."
+        task.spawn(executarSequencia)
+    end
+end)
+botaoParar.MouseButton1Click:Connect(function()
+    if scriptAtivo then
+        scriptAtivo = false
+        botaoIniciar.Text = "Iniciar"
+        botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        statusLocal.Text = "Local: Farm Parado"
+    end
+end)
+ativarGodMode()
+                ]])()
+            end)
+        end, ContentContainer)
+        
+    else
+                        autoClickerButton.Text = "⌨️ Auto Press F: OFF"
+                        autoClickerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+                    end
+                end)
+            end)
+        end, ContentContainer)
+        
+        createSpacer(15, ContentContainer)
+        
+        -- Auto Farm de Banco
+        createLabel("Auto Farm de Banco", ContentContainer, 18, true)
+        createSpacer(10, ContentContainer)
+        
+        createButton("Auto Farm de Banco ➜", function()
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Godzilla Hub";
+                Text = "Auto Farm de Banco iniciado!";
+                Duration = 3;
+            })
+            
+            -- Executar o script do Auto Farm de Banco
+            pcall(function()
+                -- Verifica se já existe a UI
+                local existingGui = LocalPlayer.PlayerGui:FindFirstChild("AutomacaoGUI")
+                if existingGui then
+                    existingGui:Destroy()
+                end
+                
+                -- Executar script de Auto Farm de Banco
+                local Players = game:GetService("Players")
+                local player = Players.LocalPlayer
+                local character = player.Character or player.CharacterAdded:Wait()
+                local humanoid = character:WaitForChild("Humanoid")
+                local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+                local scriptAtivo = false
+                local godModeAtivado = false
+
+                local cofres = {
+                    Vector3.new(-253.62, 14.00, -179.14),
+                    Vector3.new(1587.28, 122.00, 1679.60),
+                    Vector3.new(1574.83, 122.00, 1679.29),
+                    Vector3.new(1569.38, 122.00, 1675.40),
+                    Vector3.new(1569.66, 122.00, 1667.08),
+                    Vector3.new(1906.17, 170.73, 3463.13),
+                    Vector3.new(1910.97, 170.73, 3458.25),
+                    Vector3.new(-255.25, 14.00, -179.38),
+                    Vector3.new(-254.14, 14.00, -169.64),
+                    Vector3.new(-272.07, 14.00, -177.09),
+                    Vector3.new(-271.93, 14.00, -168.96),
+                    Vector3.new(870.30, 25.32, 200.04),
+                    Vector3.new(874.84, 25.32, 195.75)
+                }
+
+                local acampamento = Vector3.new(-66.54, 75.44, 1287.72)
+
+                -- Criar GUI
+                local screenGui = Instance.new("ScreenGui")
+                screenGui.Name = "AutomacaoGUI"
+                screenGui.Parent = player:WaitForChild("PlayerGui")
+                screenGui.ResetOnSpawn = false
+
+                local mainFrame = Instance.new("Frame")
+                mainFrame.Size = UDim2.new(0, 280, 0, 180)
+                mainFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+                mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+                mainFrame.BorderSizePixel = 2
+                mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+                mainFrame.Parent = screenGui
+
+                local corner = Instance.new("UICorner")
+                corner.CornerRadius = UDim.new(0, 10)
+                corner.Parent = mainFrame
+
+                local titulo = Instance.new("TextLabel")
+                titulo.Size = UDim2.new(1, 0, 0, 40)
+                titulo.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                titulo.BorderSizePixel = 0
+                titulo.Text = "Farm Automático"
+                titulo.TextColor3 = Color3.fromRGB(255, 255, 255)
+                titulo.TextSize = 20
+                titulo.Font = Enum.Font.GothamBold
+                titulo.Parent = mainFrame
+
+                local tituloCorner = Instance.new("UICorner")
+                tituloCorner.CornerRadius = UDim.new(0, 10)
+                tituloCorner.Parent = titulo
+
+                local statusGodMode = Instance.new("TextLabel")
+                statusGodMode.Size = UDim2.new(1, -20, 0, 25)
+                statusGodMode.Position = UDim2.new(0, 10, 0, 50)
+                statusGodMode.BackgroundTransparency = 1
+                statusGodMode.Text = "God Mod: Desativado"
+                statusGodMode.TextColor3 = Color3.fromRGB(255, 100, 100)
+                statusGodMode.TextSize = 14
+                statusGodMode.Font = Enum.Font.Gotham
+                statusGodMode.Parent = mainFrame
+
+                local statusProgresso = Instance.new("TextLabel")
+                statusProgresso.Size = UDim2.new(1, -20, 0, 25)
+                statusProgresso.Position = UDim2.new(0, 10, 0, 80)
+                statusProgresso.BackgroundTransparency = 1
+                statusProgresso.Text = "Progresso: 0/" .. #cofres .. " cofres"
+                statusProgresso.TextColor3 = Color3.fromRGB(200, 200, 200)
+                statusProgresso.TextSize = 13
+                statusProgresso.Font = Enum.Font.Gotham
+                statusProgresso.Parent = mainFrame
+
+                local statusLocal = Instance.new("TextLabel")
+                statusLocal.Size = UDim2.new(1, -20, 0, 25)
+                statusLocal.Position = UDim2.new(0, 10, 0, 105)
+                statusLocal.BackgroundTransparency = 1
+                statusLocal.Text = "Local: Aguardando..."
+                statusLocal.TextColor3 = Color3.fromRGB(150, 150, 150)
+                statusLocal.TextSize = 12
+                statusLocal.Font = Enum.Font.Gotham
+                statusLocal.Parent = mainFrame
+
+                local botaoIniciar = Instance.new("TextButton")
+                botaoIniciar.Size = UDim2.new(0, 120, 0, 35)
+                botaoIniciar.Position = UDim2.new(0, 15, 0, 135)
+                botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+                botaoIniciar.Text = "Iniciar"
+                botaoIniciar.TextColor3 = Color3.fromRGB(255, 255, 255)
+                botaoIniciar.TextSize = 16
+                botaoIniciar.Font = Enum.Font.GothamBold
+                botaoIniciar.Parent = mainFrame
+
+                local iniciarCorner = Instance.new("UICorner")
+                iniciarCorner.CornerRadius = UDim.new(0, 8)
+                iniciarCorner.Parent = botaoIniciar
+
+                local botaoParar = Instance.new("TextButton")
+                botaoParar.Size = UDim2.new(0, 120, 0, 35)
+                botaoParar.Position = UDim2.new(0, 145, 0, 135)
+                botaoParar.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+                botaoParar.Text = "Parar"
+                botaoParar.TextColor3 = Color3.fromRGB(255, 255, 255)
+                botaoParar.TextSize = 16
+                botaoParar.Font = Enum.Font.GothamBold
+                botaoParar.Parent = mainFrame
+
+                local pararCorner = Instance.new("UICorner")
+                pararCorner.CornerRadius = UDim.new(0, 8)
+                pararCorner.Parent = botaoParar
+
+                local function ativarGodMode()
+                    if not godModeAtivado then
+                        humanoid.MaxHealth = math.huge
+                        humanoid.Health = math.huge
+                        humanoid.HealthChanged:Connect(function(health)
+                            if godModeAtivado and health < humanoid.MaxHealth then
+                                humanoid.Health = humanoid.MaxHealth
+                            end
+                        end)
+                        godModeAtivado = true
+                        statusGodMode.Text = "God Mod: Ativado ✓"
+                        statusGodMode.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    end
+                end
+
+                local function teleportar(posicao, nomeLugar)
+                    if character and humanoidRootPart then
+                        humanoid.WalkSpeed = 0
+                        task.wait(0.1)
+                        humanoidRootPart.CFrame = CFrame.new(posicao)
+                        humanoidRootPart.Anchored = true
+                        task.wait(0.2)
+                        humanoidRootPart.Anchored = false
+                        humanoid.WalkSpeed = 16
+                    end
+                end
+
+                local function manterFPressionada(segundos)
+                    local VirtualInputManager = game:GetService("VirtualInputManager")
+                    local tempoInicio = tick()
+                    local tempoFim = tempoInicio + segundos
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+                    while tick() < tempoFim and scriptAtivo do
+                        task.wait(0.05)
+                    end
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+                end
+
+                local function executarSequencia()
+                    scriptAtivo = true
+                    botaoIniciar.Text = "Executando..."
+                    botaoIniciar.BackgroundColor3 = Color3.fromRGB(150, 150, 0)
+                    
+                    for indiceCofre = 1, #cofres do
+                        if not scriptAtivo then break end
+                        local coordCofre = cofres[indiceCofre]
+                        statusProgresso.Text = "Progresso: " .. (indiceCofre - 1) .. "/" .. #cofres .. " cofres"
+                        statusLocal.Text = "Local: Indo para Cofre #" .. indiceCofre
+                        teleportar(coordCofre, "Cofre #" .. indiceCofre)
+                        task.wait(1.5)
+                        statusLocal.Text = "Local: Cofre #" .. indiceCofre .. " (Coletando...)"
+                        manterFPressionada(5)
+                        task.wait(1)
+                        manterFPressionada(10)
+                        statusProgresso.Text = "Progresso: " .. indiceCofre .. "/" .. #cofres .. " cofres"
+                        statusLocal.Text = "Local: Voltando ao Acampamento..."
+                        teleportar(acampamento, "Acampamento")
+                        task.wait(1.5)
+                        statusLocal.Text = "Local: Acampamento"
+                    end
+                    
+                    if scriptAtivo then
+                        statusProgresso.Text = "Completo: " .. #cofres .. "/" .. #cofres .. " cofres ✓"
+                        statusProgresso.TextColor3 = Color3.fromRGB(100, 255, 100)
+                        statusLocal.Text = "Local: Farm Concluído!"
+                    end
+                    
+                    scriptAtivo = false
+                    botaoIniciar.Text = "Iniciar"
+                    botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+                end
+
+                botaoIniciar.MouseButton1Click:Connect(function()
+                    if not scriptAtivo then
+                        statusProgresso.Text = "Progresso: 0/" .. #cofres .. " cofres"
+                        statusProgresso.TextColor3 = Color3.fromRGB(200, 200, 200)
+                        statusLocal.Text = "Local: Iniciando..."
+                        task.spawn(executarSequencia)
+                    end
+                end)
+
+                botaoParar.MouseButton1Click:Connect(function()
+                    if scriptAtivo then
+                        scriptAtivo = false
+                        botaoIniciar.Text = "Iniciar"
+                        botaoIniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+                        statusLocal.Text = "Local: Farm Parado"
+                    end
+                end)
+
+                ativarGodMode()
+            end)
+        end, ContentContainer)
+        
+    else
+        -- Outras abas (em desenvolvimento)
+        createLabel("Em desenvolvimento...", ContentContainer, 16, true)
+    end
+    
+    -- Ajustar tamanho do canvas
+    local contentSize = 0
+    for _, child in pairs(ContentContainer:GetChildren()) do
+        if child:IsA("GuiObject") then
+            contentSize = contentSize + child.Size.Y.Offset + 5
+        end
+    end
+    ContentContainer.CanvasSize = UDim2.new(0, 0, 0, contentSize + 20)
+end
+
+-- Função para criar botão de aba
+local function createTabButton(tabData, index)
+    local button = Instance.new("TextButton")
+    button.Name = tabData.name .. "Tab"
+    button.Size = UDim2.new(1, 0, 0, 35)
+    button.Position = UDim2.new(0, 0, 0, (index - 1) * 35)
+    button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    button.BorderSizePixel = 0
+    button.Text = tabData.icon .. " " .. tabData.name
+    button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 14
+    button.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Adicionar padding
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.Parent = button
+    
+    button.Parent = TabContainer
+    
+    -- Evento de clique
+    button.MouseButton1Click:Connect(function()
+        currentTab = tabData.name
+        -- Animar indicador
+        TweenService:Create(TabIndicator, TweenInfo.new(0.2), {Position = UDim2.new(1, -3, 0, (index - 1) * 35)}):Play()
+        
+        -- Atualizar cores dos botões
+        for _, child in pairs(TabContainer:GetChildren()) do
+            if child:IsA("TextButton") then
+                child.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                child.TextColor3 = Color3.fromRGB(200, 200, 200)
+            end
+        end
+        button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        
+        -- Atualizar conteúdo
+        updateContent(tabData.name)
+    end)
+    
+    button.MouseEnter:Connect(function()
+        if currentTab ~= tabData.name then
+            button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if currentTab ~= tabData.name then
+            button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+    end)
+    
+    return button
+end
+
+-- Criar todos os botões de aba
+for i, tab in ipairs(tabs) do
+    createTabButton(tab, i)
+end
+
+-- Selecionar primeira aba
+local creditosTab = TabContainer:FindFirstChild("CréditosTab")
+if creditosTab then
+    creditosTab.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    creditosTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+end
+
+-- Layout para organizar elementos
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 5)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = ContentContainer
+
+-- Padding
+local padding = Instance.new("UIPadding")
+padding.PaddingTop = UDim.new(0, 10)
+padding.PaddingLeft = UDim.new(0, 10)
+padding.PaddingRight = UDim.new(0, 10)
+padding.PaddingBottom = UDim.new(0, 10)
+padding.Parent = ContentContainer
+
+-- Carregar conteúdo inicial
+updateContent("Créditos")
+
+-- Notificação de carregamento
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Godzilla Hub";
+    Text = "Script carregado com sucesso!";
+    Duration = 5;
+})
+
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("Godzilla Hub carregado com sucesso!")
+print("Criado por: sereireconhecido, Godzilla_eoking1")
+print("By: Godzilla Studios")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
